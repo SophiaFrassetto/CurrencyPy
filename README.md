@@ -1,2 +1,2 @@
 # CurrencyPy
-CurrencyPy foi desenvolvido para facilitar a manipulaçao de moedas com python. Uma classe Currency feita para facilitar conversões, operações entre moedas diferentes e  também representações amigaveis com código e simbolos, Entre outros utilitarios para uso
+CurrencyPy was developed to facilitate the handling of coins with python with a small package and almost no dependencies. A currency class made to choose, operations between different currencies and also friendly representations with code and symbols, among other utilities for use.
