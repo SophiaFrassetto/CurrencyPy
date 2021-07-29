@@ -9,3 +9,4 @@ CurrencyPy was developed in an educational way, with the intention of making cur
 - [ ] Create tests.
 - [ ] CodeReview.
 - [ ] Write documentation.
+- [ ] Publish to https://pypi.org/
