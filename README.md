@@ -5,6 +5,8 @@ CurrencyPy was developed in an educational way, with the intention of making cur
 - [x] Create Currency Object.
   - [x] Create simple currency converter.
     - [ ] Add more sources with more currency pairs for conversion.
+      - [x] Add source https://docs.awesomeapi.com.br/ 
+      - [ ] Add source https://cuex.com/pt/
 - [ ] Check logic of operators and conversions.
 - [ ] Create tests.
 - [ ] CodeReview.
