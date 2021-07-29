@@ -1,6 +1,9 @@
 # CurrencyPy
 CurrencyPy was developed in an educational way, with the intention of making currency handling with python easier with a small package and almost no dependencies. A currency class of your choice, operations between different currencies and also friendly representations with code and symbols, among other utilities to use.
 
+# Disclaimer
+This tool is for educational use only, do not use these values to make financial transactions, converted values may be inaccurate and are not 100% real time, check exchange rates before any transaction.
+
 ## Progress
 - [x] Create Currency Object.
   - [x] Create simple currency converter.
