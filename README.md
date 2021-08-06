@@ -10,6 +10,7 @@ This tool is for educational use only, do not use these values to make financial
     - [ ] Add more sources with more currency pairs for conversion.
       - [x] Add source https://docs.awesomeapi.com.br/ 
       - [ ] Add source https://cuex.com/pt/
+      - [ ] Add source https://www.bcb.gov.br/
 - [ ] Check logic of operators and conversions.
 - [ ] Create tests.
 - [ ] CodeReview.
