@@ -11,6 +11,7 @@ This tool is for educational use only, do not use these values to make financial
       - [x] Add source https://docs.awesomeapi.com.br/ 
       - [ ] Add source https://cuex.com/pt/
       - [ ] Add source https://www.bcb.gov.br/
+      - [ ] Add source https://www.xe.com
 - [ ] Check logic of operators and conversions.
 - [ ] Create tests.
 - [ ] CodeReview.
