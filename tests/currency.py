@@ -6,7 +6,7 @@ from currencypy.currency import Currency
 
 
 class TestCurrency(TestCase):
-    def test_currency_istance(self):
+    def test_currency_instance(self):
         brl_currency = Currency(value=10.99)
         self.assertIsInstance(brl_currency, Currency)
 
