@@ -39,9 +39,7 @@ setuptools.setup(
     install_requires=[
         "requests",
     ],
-    extras_require={
-        "tests": ["pytest"]
-    },
+    extras_require={},
     python_requires=">=3.6",
     
 )

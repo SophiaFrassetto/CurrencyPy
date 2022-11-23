@@ -8,9 +8,9 @@ from locale import currency
 from locale import localeconv
 
 # project imports
-from sources import EconomiaAwesomeAPI
-from utils import iso_code_alias
-from utils import iso_code_alias_windows
+from .sources import EconomiaAwesomeAPI
+from .utils import iso_code_alias
+from .utils import iso_code_alias_windows
 
 __all__ = ['Currency', 'QUOTATION_REFERENCES', 'LOCALE_ALIAS', 'DEFAULT_ISO_CODE']
 
