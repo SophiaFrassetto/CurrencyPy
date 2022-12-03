@@ -20,8 +20,17 @@ DEFAULT_ISO_CODE = {y: x for x, y in LOCALE_ALIAS.items()}[getlocale()[0]]
 
 
 class Currency:
-    def __init__(self, value: float, iso_code: str = None, quoting_reference: str = 'buy'):
-        self.iso_code = iso_code or DEFAULT_ISO_CODE
+    def __init__(self, value: float, iso_code: str = DEFAULT_ISO_CODE, quoting_reference: str = 'buy'):
+        """This Currency is a new type to facilitate the handling of monetary values, with a more human
+            visualization and also with conversion functions. DISCLAIMER: not everything can be 100% accurate,
+            as this is an educational project.
+
+        Args:
+            value (float): Numerical value
+            iso_code (str, optional): Iso code 4217 to reference this value. Defaults to DEFAULT_ISO_CODE (Based in your location).
+            quoting_reference (str, optional): Quote reference this value, sell or buy. Defaults to 'buy'.
+        """
+        self.iso_code = iso_code
 
         self.settings = {}
         setlocale(LC_MONETARY, LOCALE_ALIAS[self.iso_code])
