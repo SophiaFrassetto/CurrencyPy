@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="CurrencyPy",
-    version="0.0.1",
+    version="0.1.0",
     author="Lucas de Angelo Frassetto",
     author_email="lucasfrassetto8@gmail.com",
     description="Some tools for currency values, such as conversion sanitization and validation",
