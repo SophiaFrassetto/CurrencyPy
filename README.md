@@ -10,20 +10,18 @@ This tool is for educational use only, do not use these values to make financial
 
 - [x] Create Currency Object.
   - [x] Create simple currency converter.
-    - [ ] Add more sources with more currency pairs for conversion.
-      - [x] Add source <https://docs.awesomeapi.com.br/>
-      - [ ] Add source <https://cuex.com/pt/>
-      - [ ] Add source <https://www.bcb.gov.br/>
-      - [ ] Add source <https://www.xe.com>
-  - [ ] Check locale in:
-    - [ ] Windows.
-      - [ ] Windows 10.
+    - [X] Add source <https://api.exchangerate-api.com/v4/latest/>
+    - [X] Add source <https://www.exchangerate-api.com/docs/standard-requests>
+  - [X] Check locale in:
+    - [X] Windows.
+      - [X] Windows 10.
     - [x] Linux.
       - [x] Fedora 32.
     - [ ] Mac.
-- [ ] Set default iso_code based in current locale if not provided.
-- [ ] Check logic of operators and conversions.
-- [ ] Create tests.
+- [x] Refactory.
+- [x] Set default iso_code based in current locale if not provided.
+- [X] Check logic of operators and conversions.
+- [X] Create tests.
 - [ ] CodeReview.
 - [ ] Write documentation.
 - [ ] Publish to <https://pypi.org/>

@@ -1,34 +1,41 @@
 # build-in imports
+import logging
 import platform
 from datetime import date
-from locale import LC_MONETARY
-from locale import setlocale
-from locale import getlocale
-from locale import currency
-from locale import localeconv
+from decimal import Decimal
+from locale import (
+    currency,
+    getlocale,
+    LC_MONETARY,
+    localeconv,
+    setlocale,
+)
 
 # project imports
-from .sources import EconomiaAwesomeAPI
-from .utils import iso_code_alias
-from .utils import iso_code_alias_windows
+from .sources import (
+    ExchangeRateAPIV4,
+    ExchangeRateAPIV6,
+)
+from .utils import (
+    iso_code_alias,
+    iso_code_alias_windows,
+)
 
-__all__ = ['Currency', 'QUOTATION_REFERENCES', 'LOCALE_ALIAS', 'DEFAULT_ISO_CODE']
+__all__ = ['Currency', 'LOCALE_ALIAS', 'DEFAULT_ISO_CODE']
 
-QUOTATION_REFERENCES = ['buy', 'sell']
 LOCALE_ALIAS = {'Windows': iso_code_alias_windows, 'Linux': iso_code_alias, 'Darwin': iso_code_alias}[platform.system()]
 DEFAULT_ISO_CODE = {y: x for x, y in LOCALE_ALIAS.items()}[getlocale()[0]]
 
 
 class Currency:
-    def __init__(self, value: float, iso_code: str = DEFAULT_ISO_CODE, quoting_reference: str = 'buy'):
+    def __init__(self, value: Decimal, iso_code: str = DEFAULT_ISO_CODE):
         """This Currency is a new type to facilitate the handling of monetary values, with a more human
             visualization and also with conversion functions. DISCLAIMER: not everything can be 100% accurate,
             as this is an educational project.
 
         Args:
-            value (float): Numerical value
+            value (Decimal): Numerical value
             iso_code (str, optional): Iso code 4217 to reference this value. Defaults to DEFAULT_ISO_CODE (Based in your location).
-            quoting_reference (str, optional): Quote reference this value, sell or buy. Defaults to 'buy'.
         """
         self.iso_code = iso_code
 
@@ -37,7 +44,6 @@ class Currency:
         self.settings = localeconv()
 
         self.value = value
-        self.quoting_reference = quoting_reference
 
     @property
     def iso_code(self):
@@ -65,38 +71,39 @@ class Currency:
         self._value = self._value_validate(value)
 
     def _value_validate(self, value):
-        if not isinstance(value, (int, float)):
+        if not isinstance(value, (int, Decimal, float)):
             raise TypeError('The value must be of type (int, float...), or be of type str which contains currency value.')
-        return round(float(value), self.settings['frac_digits'])
-
-    @property
-    def quoting_reference(self):
-        return self._quoting_reference
-
-    @quoting_reference.setter
-    def quoting_reference(self, quoting_reference):
-        self._quoting_reference = self._quoting_reference_validate(quoting_reference)
-
-    def _quoting_reference_validate(self, quoting_reference):
-        if not isinstance(quoting_reference, str):
-            raise TypeError('The quoting_reference must be of type str')
-        elif quoting_reference not in QUOTATION_REFERENCES:
-            raise TypeError(f'This quoting reference is not supported - {quoting_reference}')
-        return quoting_reference
+        return round(Decimal(value), self.settings['frac_digits'])
 
     def convert_to(self, to_iso_code: str, date: date = None):
-        sources = [EconomiaAwesomeAPI]
-        pair = f'{self.iso_code}-{to_iso_code}'.upper()
+        sources = [
+            ExchangeRateAPIV6, ExchangeRateAPIV4
+        ]
+
+        tax = None
         for source in sources:
-            if source.check_available_convertion(pair):
-                if date:
-                    quote = source.convert_by_date(pair, date)
-                else:
-                    quote = source.convert(pair)
-                refereces = {'buy': quote.buy, 'sell': quote.sell}
-                value_reference = refereces[self.quoting_reference]
-                return Currency(self.value * self._value_validate(value_reference), to_iso_code)
-        return NotImplemented
+            try:
+                if source().check_pair_available_convertion(self.iso_code, to_iso_code):
+                    if date:
+                        try:
+                            tax = source().get_pair_tax_by_date(self.iso_code, to_iso_code, date)
+                        except NotImplementedError:
+                            logging.warning(f'This source {source.__name__} no has possible get pair tax by date.')
+                            continue
+                    else:
+                        tax = source().get_pair_tax(self.iso_code, to_iso_code)
+                    break
+            except Exception as err:
+                logging.warning(f'Error to get tax with source {source.__name__} - {err}')
+                continue
+
+        if not tax:
+            raise Exception(f'It was not possible to convert the value {self.iso_code} to {to_iso_code}')
+
+        converted_value = self.value * self._value_validate(tax)
+        self.value = converted_value
+        self.iso_code = to_iso_code
+        setlocale(LC_MONETARY, LOCALE_ALIAS[self.iso_code])
 
     def __str__(self):
         setlocale(LC_MONETARY, LOCALE_ALIAS[self.iso_code])
@@ -106,58 +113,72 @@ class Currency:
         setlocale(LC_MONETARY, LOCALE_ALIAS[self.iso_code])
         return currency(self.value, symbol=True, grouping=True, international=True)
 
-    # def __add__(self, other):
-    #     if isinstance(other, Currency):
-    #         if other.iso_code != self.iso_code:
-    #             return Currency(round(self.value + other.convert_to(self.iso_code).value, self.settings['frac_digits']), self.iso_code)
-    #         return Currency(round(self.value + other.value, self.settings['frac_digits']), self.iso_code)
-    #     return NotImplemented
+    def __add__(self, other):
+        if isinstance(other, Currency):
+            if other.iso_code != self.iso_code:
+                raise ValueError(f"Cannot add currencies with different currency codes - ({repr(self)}, {repr(other)})") 
+            return Currency(round(self.value + other.value, self.settings['frac_digits']), self.iso_code)
+        else:
+            raise TypeError(f"Cannot add Currency object to non-Currency object - (Currency, {type(other)})")
 
-    # def __sub__(self, other):
-    #     if isinstance(other, Currency):
-    #         if other.iso_code != self.iso_code:
-    #             return Currency(round(self.value - other.convert_to(self.iso_code).value, self.settings['frac_digits']), self.iso_code)
-    #         return Currency(round(self.value - other.value, self.settings['frac_digits']), self.iso_code)
-    #     return NotImplemented
+    def __sub__(self, other):
+        if isinstance(other, Currency):
+            if other.iso_code != self.iso_code:
+                raise ValueError(f"Cannot subtract currencies with different currency codes - ({repr(self)}, {repr(other)})")
+            return Currency(round(self.value - other.value, self.settings['frac_digits']), self.iso_code)
+        else:
+            raise TypeError(f"Cannot subtract Currency object from non-Currency object - (Currency, {type(other)})")
 
-    # def __eq__(self, other):
-    #     if isinstance(other, Currency):
-    #         if other.iso_code != self.iso_code:
-    #             return self.value == other.convert_to(self.iso_code).value
-    #         return self.value == other.value
-    #     return NotImplemented
+    def __mul__(self, other):
+        if isinstance(other, Currency):
+            if other.iso_code != self.iso_code:
+                raise ValueError(f"Cannot multiply currencies with different currency codes - ({repr(self)}, {repr(other)})")
+            return Currency(round(self.value * other.value, self.settings['frac_digits']), self.iso_code)
+        else:
+            raise TypeError(f"Cannot multiply Currency object from non-Currency object - (Currency, {type(other)})")
 
-    # def __ne__(self, other):
-    #     if isinstance(other, Currency):
-    #         if other.iso_code != self.iso_code:
-    #             return self.value != other.convert_to(self.iso_code).value
-    #         return self.value != other.value
-    #     return NotImplemented
+    def __truediv__(self, other):
+        if isinstance(other, Currency):
+            if other.iso_code != self.iso_code:
+                raise ValueError(f"Cannot divide currencies with different currency codes - ({repr(self)}, {repr(other)})")
+            return Currency(round(self.value / other.value, self.settings['frac_digits']), self.iso_code)
+        else:
+            raise TypeError(f"Cannot divide Currency object from non-Currency object - (Currency, {type(other)})")
 
-    # def __lt__(self, other):
-    #     if isinstance(other, Currency):
-    #         if other.iso_code != self.iso_code:
-    #             return self.value < other.convert_to(self.iso_code).value
-    #         return self.value < other.value
-    #     return NotImplemented
+    def __eq__(self, other):
+        if isinstance(other, Currency):
+            return self.value == other.value and other.iso_code == self.iso_code
+        else:
+            raise TypeError(f"Cannot compare Currency object from non-Currency object - (Currency, {type(other)})")
 
-    # def __le__(self, other):
-    #     if isinstance(other, Currency):
-    #         if other.iso_code != self.iso_code:
-    #             return self.value <= other.convert_to(self.iso_code).value
-    #         return self.value <= other.value
-    #     return NotImplemented
+    def __lt__(self, other):
+        if isinstance(other, Currency):
+            if other.iso_code != self.iso_code:
+                raise ValueError(f"Cannot compare currencies with different currency codes - ({repr(self)}, {repr(other)})")
+            return self.value < other.value
+        else:
+            raise TypeError(f"Cannot compare Currency object from non-Currency object - (Currency, {type(other)})")
 
-    # def __gt__(self, other):
-    #     if isinstance(other, Currency):
-    #         if other.iso_code != self.iso_code:
-    #             return self.value > other.convert_to(self.iso_code).value
-    #         return self.value > other.value
-    #     return NotImplemented
+    def __le__(self, other):
+        if isinstance(other, Currency):
+            if other.iso_code != self.iso_code:
+                raise ValueError(f"Cannot compare currencies with different currency codes - ({repr(self)}, {repr(other)})")
+            return self.value <= other.value
+        else:
+            raise TypeError(f"Cannot compare Currency object from non-Currency object - (Currency, {type(other)})")
 
-    # def __ge__(self, other):
-    #     if isinstance(other, Currency):
-    #         if other.iso_code != self.iso_code:
-    #             return self.value >= other.convert_to(self.iso_code).value
-    #         return self.value >= other.value
-    #     return NotImplemented
+    def __gt__(self, other):
+        if isinstance(other, Currency):
+            if other.iso_code != self.iso_code:
+                raise ValueError(f"Cannot compare currencies with different currency codes - ({repr(self)}, {repr(other)})")
+            return self.value > other.value
+        else:
+            raise TypeError(f"Cannot compare Currency object from non-Currency object - (Currency, {type(other)})")
+
+    def __ge__(self, other):
+        if isinstance(other, Currency):
+            if other.iso_code != self.iso_code:
+                raise ValueError(f"Cannot compare currencies with different currency codes - ({repr(self)}, {repr(other)})")
+            return self.value >= other.value
+        else:
+            raise TypeError(f"Cannot compare Currency object from non-Currency object - (Currency, {type(other)})")

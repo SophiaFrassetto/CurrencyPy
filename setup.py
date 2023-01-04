@@ -36,10 +36,10 @@ setuptools.setup(
     include_package_data=True,
     zip_safe=True,
     test_requires=[],
-    install_requires=[
-        "requests",
-    ],
-    extras_require={},
+    install_requires=[],
+    extras_require={
+        'coverage'
+    },
     python_requires=">=3.6",
-    
+
 )

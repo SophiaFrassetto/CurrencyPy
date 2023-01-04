@@ -1,3 +1,3 @@
 from .source_base import Sources
-from .source_base import CurrencyQuote
-from .economia_awesome_api import EconomiaAwesomeAPI
+from .exchange_rate_api_v4 import ExchangeRateAPIV4
+from .exchange_rate_api_v6 import ExchangeRateAPIV6
