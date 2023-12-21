@@ -10,7 +10,7 @@ This tool is for educational use only, do not use these values to make financial
 
 - [x] Create Currency Object.
   - [x] Create simple currency converter.
-    - [X] Add source <https://api.exchangerate-api.com/v4/latest/>
+    - [X] ~~Add source <https://api.exchangerate-api.com/v4/latest/>~~ **discontinued**
     - [X] Add source <https://www.exchangerate-api.com/docs/standard-requests>
   - [X] Check locale in:
     - [X] Windows.
