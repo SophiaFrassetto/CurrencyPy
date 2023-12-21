@@ -41,5 +41,4 @@ setuptools.setup(
         'coverage'
     },
     python_requires=">=3.6",
-
 )
