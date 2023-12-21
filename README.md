@@ -21,8 +21,7 @@ This tool is for educational use only, do not use these values to make financial
   - [x] Refactory;
   - [x] Set default iso_code based in current locale if not provided;
   - [X] Check logic of operators and conversions;
-  - [X] Create tests;
-  - [ ] Write documentation.
+  - [X] Create tests.
 ### V2
   - [ ] Refactory and upgrade;
   - [ ] Add String Parse;
