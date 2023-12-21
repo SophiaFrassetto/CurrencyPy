@@ -17,7 +17,6 @@ This tool is for educational use only, do not use these values to make financial
         - [X] Windows 10.
       - [x] Linux;
         - [x] Fedora 32.
-      - [ ] Mac.
   - [x] Refactory;
   - [x] Set default iso_code based in current locale if not provided;
   - [X] Check logic of operators and conversions;
@@ -27,7 +26,5 @@ This tool is for educational use only, do not use these values to make financial
   - [ ] Add String Parse;
     - [ ] Validade which currency code;
     - [ ] Validade string currency.
-  - [ ] Code Review;
   - [ ] More Tests;
-  - [ ] Update Documentations;
   - [ ] Publish to <https://pypi.org/>.
