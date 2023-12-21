@@ -5,17 +5,17 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="CurrencyPy",
-    version="0.1.0",
-    author="Lucas de Angelo Frassetto",
-    author_email="lucasfrassetto8@gmail.com",
+    version="0.1.1",
+    author="Sophia de Angelo Frassetto",
+    author_email="sophiafrassetto@gmail.com",
     description="Some tools for currency values, such as conversion sanitization and validation",
     keywords="currency tools converter",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/LucasFrassetto/CurrencyPy",
+    url="https://github.com/SophiaFrassetto/CurrencyPy",
     project_urls={
         "Documentation": "",
-        "Source Code": "https://github.com/LucasFrassetto/CurrencyPy",
+        "Source Code": "https://github.com/SophiaFrassetto/CurrencyPy",
     },
     classifiers=[
         "Development Status :: 1 - Planning",

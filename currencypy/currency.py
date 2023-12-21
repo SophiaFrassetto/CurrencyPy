@@ -13,7 +13,6 @@ from locale import (
 
 # project imports
 from .sources import (
-    ExchangeRateAPIV4,
     ExchangeRateAPIV6,
 )
 from .utils import (
@@ -77,7 +76,7 @@ class Currency:
 
     def convert_to(self, to_iso_code: str, date: date = None):
         sources = [
-            ExchangeRateAPIV6, ExchangeRateAPIV4
+            ExchangeRateAPIV6
         ]
 
         tax = None
