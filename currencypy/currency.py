@@ -13,11 +13,13 @@ from locale import (
 
 # project imports
 from .sources import (
+    ValidateSource,
     ExchangeRateAPIV6,
 )
 from .utils import (
     iso_code_alias,
     iso_code_alias_windows,
+    parse_currency_string,
 )
 
 __all__ = ['Currency', 'LOCALE_ALIAS', 'DEFAULT_ISO_CODE']
@@ -27,7 +29,7 @@ DEFAULT_ISO_CODE = {y: x for x, y in LOCALE_ALIAS.items()}[getlocale()[0]]
 
 
 class Currency:
-    def __init__(self, value: Decimal, iso_code: str = DEFAULT_ISO_CODE):
+    def __init__(self, value: Decimal, iso_code: str = None):
         """This Currency is a new type to facilitate the handling of monetary values, with a more human
             visualization and also with conversion functions. DISCLAIMER: not everything can be 100% accurate,
             as this is an educational project.
@@ -36,7 +38,8 @@ class Currency:
             value (Decimal): Numerical value
             iso_code (str, optional): Iso code 4217 to reference this value. Defaults to DEFAULT_ISO_CODE (Based in your location).
         """
-        self.iso_code = iso_code
+        self.use_default_iso_code = True if iso_code is None else False
+        self.iso_code = iso_code if iso_code else DEFAULT_ISO_CODE
 
         self.settings = {}
         setlocale(LC_MONETARY, LOCALE_ALIAS[self.iso_code])
@@ -70,8 +73,12 @@ class Currency:
         self._value = self._value_validate(value)
 
     def _value_validate(self, value):
-        if not isinstance(value, (int, Decimal, float)):
+        if not isinstance(value, (int, Decimal, float, str)):
             raise TypeError('The value must be of type (int, float...), or be of type str which contains currency value.')
+        if isinstance(value, str):
+            value, _iso_code = parse_currency_string(value, locale_alias=LOCALE_ALIAS, iso_code=self.iso_code if self.use_default_iso_code else None)
+            if self.use_default_iso_code and _iso_code != self.iso_code:
+                self.iso_code = _iso_code
         return round(Decimal(value), self.settings['frac_digits'])
 
     def convert_to(self, to_iso_code: str, date: date = None):
@@ -82,16 +89,17 @@ class Currency:
         tax = None
         for source in sources:
             try:
-                if source().check_pair_available_convertion(self.iso_code, to_iso_code):
-                    if date:
-                        try:
-                            tax = source().get_pair_tax_by_date(self.iso_code, to_iso_code, date)
-                        except NotImplementedError:
-                            logging.warning(f'This source {source.__name__} no has possible get pair tax by date.')
-                            continue
-                    else:
-                        tax = source().get_pair_tax(self.iso_code, to_iso_code)
-                    break
+                if ValidateSource(source):
+                    if source().check_pair_available_convertion(self.iso_code, to_iso_code):
+                        if date:
+                            try:
+                                tax = source().get_pair_tax_by_date(self.iso_code, to_iso_code, date)
+                            except NotImplementedError:
+                                logging.warning(f'This source {source.__name__} no has possible get pair tax by date.')
+                                continue
+                        else:
+                            tax = source().get_pair_tax(self.iso_code, to_iso_code)
+                        break
             except Exception as err:
                 logging.warning(f'Error to get tax with source {source.__name__} - {err}')
                 continue

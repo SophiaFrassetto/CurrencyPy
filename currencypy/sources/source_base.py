@@ -2,7 +2,6 @@
 from abc import ABC, abstractmethod
 from datetime import date
 from decimal import Decimal
-from typing import List
 
 
 class Sources(ABC):
@@ -17,3 +16,11 @@ class Sources(ABC):
     @abstractmethod
     def get_pair_tax_by_date(self, code_from: str, code_to: str, date: date) -> Decimal:
         raise NotImplementedError()
+
+
+class ValidateSource:
+    def __init__(self, source: Sources):
+        self.source = source
+
+    def __call__(self):
+        return self.source

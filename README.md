@@ -7,7 +7,7 @@ CurrencyPy was developed in an educational way, with the intention of making cur
 This tool is for educational use only, do not use these values to make financial transactions, converted values may be inaccurate and are not 100% real time, check exchange rates before any transaction.
 
 ## Progress
-### V1
+- ### V1
   - [x] Create Currency Object;
     - [x] Create simple currency converter;
       - [X] ~~Add source <https://api.exchangerate-api.com/v4/latest/>~~ **discontinued**
@@ -21,9 +21,8 @@ This tool is for educational use only, do not use these values to make financial
   - [x] Refactory;
   - [x] Set default iso_code based in current locale if not provided;
   - [X] Check logic of operators and conversions;
-  - [X] Create tests;
-  - [ ] Write documentation.
-### V2
+
+- ### V2
   - [ ] Refactory and upgrade;
   - [ ] Add String Parse;
     - [ ] Validade which currency code;
@@ -32,3 +31,10 @@ This tool is for educational use only, do not use these values to make financial
   - [ ] More Tests;
   - [ ] Update Documentations;
   - [ ] Publish to <https://pypi.org/>.
+
+## Install
+**COMING SOON**
+<!-- `pip install currencypy` -->
+
+## Use
+**COMING SOON**
