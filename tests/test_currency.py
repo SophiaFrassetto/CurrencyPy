@@ -47,7 +47,6 @@ class TestCurrency(TestCase):
         with self.assertRaises(TypeError):
             c1 - 'foo'
 
-
     def test_currency_subtraction(self):
         c1 = Currency(100, "USD")
         c2 = Currency(50, "USD")
@@ -190,6 +189,48 @@ class TestCurrency(TestCase):
         with self.assertRaises(TypeError):
             c1 >= "foo"
 
+    def test_currency_convert_to(self):
+        c1 = Currency(100, "USD")
+        c1.convert_to("EUR")
+        self.assertEqual(c1.iso_code, "EUR")
+
+    def test_currency_str(self):
+        c1 = Currency(100, "USD")
+        self.assertEqual(str(c1), "$100.00")
+
+    def test_currency_repr(self):
+        c1 = Currency(100, "USD")
+        self.assertEqual(repr(c1), "USD100.00")
+
+    def test_currency_iso_code_setter(self):
+        c1 = Currency(100, "USD")
+        c1.iso_code = "EUR"
+        self.assertEqual(c1.iso_code, "EUR")
+
+    def test_currency_value_setter(self):
+        c1 = Currency(100, "USD")
+        c1.value = 200
+        self.assertEqual(c1.value, 200)
+
+    def test_currency_iso_code_setter_invalid(self):
+        c1 = Currency(100, "USD")
+        with self.assertRaises(ValueError):
+            c1.iso_code = "INVALID"
+
+    def test_currency_value_setter_invalid(self):
+        c1 = Currency(100, "USD")
+        with self.assertRaises(TypeError):
+            c1.value = "INVALID"
+
+    def test_currency_iso_code_validate(self):
+        c1 = Currency(100, "USD")
+        with self.assertRaises(ValueError):
+            c1._iso_code_validate("INVALID")
+
+    def test_currency_value_validate(self):
+        c1 = Currency(100, "USD")
+        with self.assertRaises(TypeError):
+            c1._value_validate("INVALID")
 
 
 if __name__ == "__main__":
